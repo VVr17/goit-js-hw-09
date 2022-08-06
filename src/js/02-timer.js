@@ -54,7 +54,8 @@ function onStartBtnClick() {
   refs.startBtn.setAttribute('disabled', true);
 
   const intervalId = setInterval(() => {
-    if ((selectedDatetime - Date.now()) < 0100) {
+    console.log('selectedDatetime - Date.now()',selectedDatetime - Date.now())
+    if ((selectedDatetime - Date.now()) < 100) {
       clearInterval(intervalId);
       return;
       }
