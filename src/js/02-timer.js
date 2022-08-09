@@ -7,6 +7,10 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_orange.css";
 
+// библиотека notiflix
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
+
 const refs = {
   startBtn:document.querySelector('button[data-start]'),
   days: document.querySelector('span[data-days]'),
@@ -17,6 +21,7 @@ const refs = {
 
 let selectedDatetime = null;
 
+// объект параметров flatpickr
 const datetimePicker = {
   enableTime: true, // добавляет в календарь время
   time_24hr: true, // 24 часовой формат
@@ -33,13 +38,14 @@ const datetimePicker = {
     selectedDatetime = selectedDates[0].getTime();
 
     if (selectedDatetime <= Date.now()) {
-      window.alert('Please choose a date in the future');
+      Notify.failure('Please choose a date in the future'); // notiflix notify
       refs.startBtn.setAttribute('disabled', true);
       this.open();
       return
     }
 
     if (refs.startBtn.hasAttribute('disabled')) {
+      Notify.success('Everything is OK. You can get started countdown'); // notiflix notify
       refs.startBtn.removeAttribute('disabled')
     }
   },
@@ -54,15 +60,14 @@ function onStartBtnClick() {
   refs.startBtn.setAttribute('disabled', true);
 
   const intervalId = setInterval(() => {
-    console.log('selectedDatetime - Date.now()',selectedDatetime - Date.now())
-    if ((selectedDatetime - Date.now()) < 100) {
+    if ((selectedDatetime - Date.now()) < 0) {
       clearInterval(intervalId);
       return;
       }
 
-      const timeToSelectedDate = convertMsIntoDatetime(selectedDatetime - Date.now());
-      OutputCountdown(timeToSelectedDate);
-    }, 1000)
+    const timeToSelectedDate = convertMsIntoDatetime(selectedDatetime - Date.now());
+    OutputCountdown(timeToSelectedDate);
+  }, 1000)
 }
 
 function convertMsIntoDatetime(milliseconds) {
@@ -84,15 +89,15 @@ function convertMsIntoDatetime(milliseconds) {
   return { days, hours, minutes, seconds };
 }
 
+// добавить 0 до необходимого формата записи
+function addLeadingZero(value) {
+  return String(value).padStart(2, 0);
+}
+
 // вывести на экран обратный отсчет
 function OutputCountdown({ days, hours, minutes, seconds }) {
   refs.days.textContent = addLeadingZero(days);
   refs.hours.textContent = addLeadingZero(hours);
   refs.minutes.textContent = addLeadingZero(minutes);
   refs.seconds.textContent = addLeadingZero(seconds);
-
-}
-
-function addLeadingZero(value) {
-  return String(value).padStart(2, 0);
 }
